@@ -122,17 +122,17 @@ def update_animal(id, new_animal):
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        UPDATE Animal
+        UPDATE animal
             SET
                 name = ?,
                 breed = ?,
                 status = ?,
                 location_id = ?,
-                customer_id = ?
+                animal_id = ?
         WHERE id = ?
         """, (new_animal['name'], new_animal['breed'],
               new_animal['status'], new_animal['locationId'],
-              new_animal['customerId'], id, ))
+              new_animal['animalId'], id, ))
 
         # Were any rows affected?
         # Did the client send an `id` that exists?
@@ -145,6 +145,7 @@ def update_animal(id, new_animal):
     else:
         # Forces 204 response by main module
         return True
+    
 
 def get_animal_by_status(status):
 
