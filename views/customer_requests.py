@@ -66,7 +66,7 @@ def create_customer(customer):
     # Add 1 to whatever that number is
     new_id = max_id + 1
 
-    # Add an `id` property to the animal dictionary
+    # Add an `id` property to the customer dictionary
     customer["id"] = new_id
 
     # Add the customer dictionary to the list
@@ -74,33 +74,36 @@ def create_customer(customer):
 
     # Return the dictionary with `id` property added
     return customer
-
-def delete_customer(id):
-    # Initial -1 value for customer index, in case one isn't found
-    customer_index = -1
-
-    # Iterate the CUSTOMER list, but use enumerate() so that you
-    # can access the index value of each item
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            # Found the customer. Store the current index.
-            customer_index = index
-
-    # If the customer was found, use pop(int) to remove it from list
-    if customer_index >= 0:
-        CUSTOMERS.pop(customer_index)
         
 def update_customer(id, new_customer):
-    # Iterate the CUSTOMERS list, but use enumerate() so that
-    # you can access the index value of each item.
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            # Found the customer. Update the value.
-            CUSTOMERS[index] = new_customer
-            break
-        
-# TODO: you will get an error about the address on customer. Look through the customer model and requests to see if you can solve the issue.
-        
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        UPDATE Customer
+            SET
+                name = ?,
+                breed = ?,
+                status = ?,
+                location_id = ?,
+                customer_id = ?
+        WHERE id = ?
+        """, (new_customer['name'], new_customer['breed'],
+              new_customer['status'], new_customer['locationId'],
+              new_customer['customerId'], id, ))
+
+        # Were any rows affected?
+        # Did the client send an `id` that exists?
+        rows_affected = db_cursor.rowcount
+
+    # return value of this function
+    if rows_affected == 0:
+        # Forces 404 response by main module
+        return False
+    else:
+        # Forces 204 response by main module
+        return True
+    
 def get_customer_by_email(email):
 
     with sqlite3.connect("./kennel.sqlite3") as conn:
@@ -127,3 +130,12 @@ def get_customer_by_email(email):
             customers.append(customer.__dict__)
 
     return customers
+
+def delete_customer(id):
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        DELETE FROM customer
+        WHERE id = ?
+        """, (id, ))
