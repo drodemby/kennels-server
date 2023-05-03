@@ -40,6 +40,8 @@ def get_all_customers():
             # exact order of the parameters defined in the
             # Customer class above.
             customer = Customer(row['id'], row['name'], row['address'])
+            
+             # Create a Location instance from the current row
 
             customers.append(customer.__dict__) # see the notes below for an explanation on this line of code.
 

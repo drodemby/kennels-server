@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Employee
+from models import Employee, Location
 
 EMPLOYEES = [
     {
@@ -21,8 +21,12 @@ def get_all_employees():
         db_cursor.execute("""
         SELECT
             a.id,
-            a.name
+            a.name,
+            l.name location_name,
+            l.address location_address
         FROM employee a
+        JOIN Location l
+            ON l.id = a.location_id
         """)
 
         # Initialize an empty list to hold all employee representations
@@ -39,8 +43,15 @@ def get_all_employees():
             # exact order of the parameters defined in the
             # employee class above.
             employee = Employee(row['id'], row['name'])
+
+            location = Location(row['id'], row['location_name'], row['location_address'])
             
-            employees.append(employee.__dict__) # see the notes below for an explanation on this line of code.
+            # Add the dictionary representation of the location to the animal
+            employee.location = location.__dict__
+            
+            employees.append(employee.__dict__)  
+            employees.append(location.__dict__)
+           # see the notes below for an explanation on this line of code.
 
     return employees
 
