@@ -46,7 +46,7 @@ def get_all_locations():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # location class above.
-            location = Location(row['id'],row['address'])
+            location = Location(row['id'], row['address'])
 
             locations.append(location.__dict__) # see the notes below for an explanation on this line of code.
 
